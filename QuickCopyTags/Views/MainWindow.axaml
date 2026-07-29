@@ -1,0 +1,37 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:models="using:QuickCopyTags.Models"
+        x:Class="QuickCopyTags.Views.MainWindow"
+        Title="QuickCopyTags"
+        Icon="avares://QuickCopyTags/Assets/icon.ico"
+        Width="480"
+        Height="560"
+        WindowStartupLocation="CenterScreen"
+        Background="#1e1e1e">
+  <Border Padding="16" Background="#1e1e1e">
+    <StackPanel Spacing="12">
+      <Grid ColumnDefinitions="*,Auto">
+        <TextBlock Grid.Column="0" Text="Quick Copy" FontSize="14" FontWeight="Bold" Foreground="#cccccc" VerticalAlignment="Center" />
+        <Button Grid.Column="1" Content="Settings" FontSize="11" Padding="8,4" Click="OnSettingsButtonClick" />
+      </Grid>
+      <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <ItemsControl x:Name="TagsList">
+          <ItemsControl.ItemsPanel>
+            <ItemsPanelTemplate>
+              <WrapPanel Orientation="Horizontal" />
+            </ItemsPanelTemplate>
+          </ItemsControl.ItemsPanel>
+          <ItemsControl.ItemTemplate>
+            <DataTemplate x:DataType="models:Tag">
+              <Button Content="{Binding Label}"
+                      Margin="4"
+                      Padding="12,8"
+                      Click="OnTagButtonClick" />
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+      </ScrollViewer>
+      <TextBlock Text="Click a tag to copy" FontSize="11" Foreground="#888888" />
+    </StackPanel>
+  </Border>
+</Window>
