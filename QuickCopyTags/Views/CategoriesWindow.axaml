@@ -1,0 +1,39 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:QuickCopyTags.ViewModels"
+        xmlns:models="using:QuickCopyTags.Models"
+        x:Class="QuickCopyTags.Views.CategoriesWindow"
+        x:DataType="vm:CategoriesViewModel"
+        Title="Manage Categories"
+        Icon="avares://QuickCopyTags/Assets/icon.ico"
+        Width="360"
+        Height="440"
+        WindowStartupLocation="CenterOwner">
+  <DockPanel Margin="12">
+    <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" Spacing="4" Margin="0,8,0,0">
+      <Button Content="+ Add" Command="{Binding AddCategoryCommand}" />
+      <Button Content="Delete" Command="{Binding DeleteCategoryCommand}" />
+      <Button Content="↑" Command="{Binding MoveUpCommand}" />
+      <Button Content="↓" Command="{Binding MoveDownCommand}" />
+    </StackPanel>
+    <TextBlock DockPanel.Dock="Top" Text="Deleting a category moves its tags to Uncategorized." FontSize="11" Foreground="#888888" Margin="0,0,0,8" TextWrapping="Wrap" />
+    <ListBox x:Name="CategoryListBox"
+              ItemsSource="{Binding Categories}"
+              SelectedItem="{Binding SelectedCategory}">
+      <ListBox.ItemTemplate>
+        <DataTemplate x:DataType="models:Category">
+          <Border Background="Transparent"
+                  Padding="4"
+                  PointerPressed="OnItemPointerPressed"
+                  DragDrop.AllowDrop="True"
+                  DragDrop.DragEnter="OnItemDragEnter"
+                  DragDrop.DragLeave="OnItemDragLeave"
+                  DragDrop.DragOver="OnItemDragOver"
+                  DragDrop.Drop="OnItemDrop">
+            <TextBox Text="{Binding Name, Mode=TwoWay}" LostFocus="OnFieldLostFocus" BorderThickness="0" Background="Transparent" />
+          </Border>
+        </DataTemplate>
+      </ListBox.ItemTemplate>
+    </ListBox>
+  </DockPanel>
+</Window>

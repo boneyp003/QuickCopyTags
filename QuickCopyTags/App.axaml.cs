@@ -8,6 +8,7 @@ using QuickCopyTags.Views;
 
 namespace QuickCopyTags;
 
+/// <summary>Composition root: creates the main window and owns the single Settings window instance.</summary>
 public partial class App : Application
 {
     private TagStore? _tagStore;

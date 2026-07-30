@@ -17,6 +17,14 @@
         <Button Content="↑" Command="{Binding MoveUpCommand}" />
         <Button Content="↓" Command="{Binding MoveDownCommand}" />
       </StackPanel>
+      <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Spacing="4" Margin="0,0,0,8" VerticalAlignment="Center">
+        <TextBlock Text="Tag font size:" VerticalAlignment="Center" />
+        <ComboBox ItemsSource="{Binding TagFontSizeOptions}"
+                  SelectedItem="{Binding TagFontSize, Mode=TwoWay}"
+                  Width="70"
+                  SelectionChanged="OnFontSizeSelectionChanged" />
+      </StackPanel>
+      <Button DockPanel.Dock="Top" Content="Manage Categories…" HorizontalAlignment="Stretch" Margin="0,0,0,8" Click="OnManageCategoriesClick" />
       <ListBox x:Name="TagListBox"
                 ItemsSource="{Binding Tags}"
                 SelectedItem="{Binding SelectedTag}">
@@ -40,6 +48,13 @@
     <StackPanel Grid.Column="1" Spacing="8" IsEnabled="{Binding SelectedTag, Converter={x:Static ObjectConverters.IsNotNull}}">
       <TextBlock Text="Label" FontWeight="Bold" />
       <TextBox x:Name="LabelBox" Text="{Binding SelectedTag.Label, Mode=TwoWay}" LostFocus="OnFieldLostFocus" />
+      <TextBlock Text="Category" FontWeight="Bold" />
+      <ComboBox ItemsSource="{Binding CategoryOptions}"
+                DisplayMemberBinding="{Binding Name}"
+                SelectedValueBinding="{Binding Id}"
+                SelectedValue="{Binding SelectedTag.CategoryId, Mode=TwoWay}"
+                HorizontalAlignment="Stretch"
+                SelectionChanged="OnCategorySelectionChanged" />
       <TextBlock Text="Content" FontWeight="Bold" />
       <TextBox x:Name="ContentBox"
                Text="{Binding SelectedTag.Content, Mode=TwoWay}"
