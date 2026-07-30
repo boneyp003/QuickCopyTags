@@ -6,11 +6,22 @@ using QuickCopyTags.Services;
 
 namespace QuickCopyTags.ViewModels;
 
+/// <summary>Backs the tag editor: the Tags list, Category assignment, and the main window's tag font size.</summary>
 public partial class SettingsViewModel : ObservableObject
 {
     private readonly TagStore _tagStore;
 
     public ObservableCollection<Tag> Tags { get; } = new();
+
+    public ObservableCollection<Category> Categories { get; } = new();
+
+    /// <summary>Categories plus a synthetic leading "Uncategorized" (Id null) entry, for the tag editor's dropdown.</summary>
+    public ObservableCollection<Category> CategoryOptions { get; } = new();
+
+    public List<int> TagFontSizeOptions { get; } = new() { 9, 10, 11, 12, 14, 16, 18, 20 };
+
+    [ObservableProperty]
+    private int _tagFontSize = 11;
 
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(DeleteTagCommand))]
@@ -24,9 +35,29 @@ public partial class SettingsViewModel : ObservableObject
     public SettingsViewModel(TagStore tagStore)
     {
         _tagStore = tagStore;
-        foreach (var tag in _tagStore.Load())
+        var data = _tagStore.Load();
+        _tagFontSize = data.TagFontSize;
+        foreach (var tag in data.Tags)
         {
             Tags.Add(tag);
+        }
+
+        foreach (var category in data.Categories)
+        {
+            Categories.Add(category);
+        }
+
+        Categories.CollectionChanged += (_, _) => RebuildCategoryOptions();
+        RebuildCategoryOptions();
+    }
+
+    private void RebuildCategoryOptions()
+    {
+        CategoryOptions.Clear();
+        CategoryOptions.Add(new Category { Id = null!, Name = "Uncategorized" });
+        foreach (var category in Categories)
+        {
+            CategoryOptions.Add(category);
         }
     }
 
@@ -63,10 +94,9 @@ public partial class SettingsViewModel : ObservableObject
         var index = Tags.IndexOf(SelectedTag);
         if (index > 0)
         {
-            var tag = SelectedTag;
             Tags.Move(index, index - 1);
             Save();
-            TagMoved?.Invoke(tag);
+            TagMoved?.Invoke(SelectedTag);
         }
     }
 
@@ -81,10 +111,9 @@ public partial class SettingsViewModel : ObservableObject
         var index = Tags.IndexOf(SelectedTag);
         if (index >= 0 && index < Tags.Count - 1)
         {
-            var tag = SelectedTag;
             Tags.Move(index, index + 1);
             Save();
-            TagMoved?.Invoke(tag);
+            TagMoved?.Invoke(SelectedTag);
         }
     }
 
@@ -106,5 +135,7 @@ public partial class SettingsViewModel : ObservableObject
 
     private bool HasSelection() => SelectedTag is not null;
 
-    public void Save() => _tagStore.Save(Tags.ToList());
+    public void Save() => _tagStore.Save(new TagData { Tags = Tags.ToList(), Categories = Categories.ToList(), TagFontSize = TagFontSize });
+
+    public CategoriesViewModel CreateCategoriesViewModel() => new(_tagStore, Categories, Tags, TagFontSize);
 }

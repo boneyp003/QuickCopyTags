@@ -1,6 +1,7 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:models="using:QuickCopyTags.Models"
+        xmlns:views="using:QuickCopyTags.Views"
         x:Class="QuickCopyTags.Views.MainWindow"
         Title="QuickCopyTags"
         Icon="avares://QuickCopyTags/Assets/icon.ico"
@@ -9,29 +10,48 @@
         WindowStartupLocation="CenterScreen"
         Background="#1e1e1e">
   <Border Padding="16" Background="#1e1e1e">
-    <StackPanel Spacing="12">
-      <Grid ColumnDefinitions="*,Auto">
+    <Grid RowDefinitions="Auto,*,Auto">
+      <Grid Grid.Row="0" ColumnDefinitions="*,Auto" Margin="0,0,0,12">
         <TextBlock Grid.Column="0" Text="Quick Copy" FontSize="14" FontWeight="Bold" Foreground="#cccccc" VerticalAlignment="Center" />
         <Button Grid.Column="1" Content="Settings" FontSize="11" Padding="8,4" Click="OnSettingsButtonClick" />
       </Grid>
-      <ScrollViewer VerticalScrollBarVisibility="Auto">
-        <ItemsControl x:Name="TagsList">
-          <ItemsControl.ItemsPanel>
-            <ItemsPanelTemplate>
-              <WrapPanel Orientation="Horizontal" />
-            </ItemsPanelTemplate>
-          </ItemsControl.ItemsPanel>
+      <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+        <ItemsControl x:Name="SectionsList">
           <ItemsControl.ItemTemplate>
-            <DataTemplate x:DataType="models:Tag">
-              <Button Content="{Binding Label}"
-                      Margin="4"
-                      Padding="12,8"
-                      Click="OnTagButtonClick" />
+            <DataTemplate x:DataType="views:CategorySection">
+              <Expander Header="{Binding Name}"
+                        IsExpanded="True"
+                        Margin="0,0,0,8"
+                        Padding="8,3"
+                        MinHeight="0"
+                        FontWeight="Bold"
+                        HorizontalAlignment="Stretch"
+                        HorizontalContentAlignment="Stretch">
+                <StackPanel Spacing="4" Margin="4">
+                  <TextBlock Text="No tags yet" FontSize="11" FontWeight="Normal" Foreground="#888888" IsVisible="{Binding IsEmpty}" />
+                  <ItemsControl ItemsSource="{Binding Tags}">
+                    <ItemsControl.ItemsPanel>
+                      <ItemsPanelTemplate>
+                        <WrapPanel Orientation="Horizontal" />
+                      </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                      <DataTemplate x:DataType="models:Tag">
+                        <Button Content="{Binding Label}"
+                                FontWeight="Normal"
+                                Margin="4"
+                                Padding="12,8"
+                                Click="OnTagButtonClick" />
+                      </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                  </ItemsControl>
+                </StackPanel>
+              </Expander>
             </DataTemplate>
           </ItemsControl.ItemTemplate>
         </ItemsControl>
       </ScrollViewer>
-      <TextBlock Text="Click a tag to copy" FontSize="11" Foreground="#888888" />
-    </StackPanel>
+      <TextBlock Grid.Row="2" Text="Click a tag to copy" FontSize="11" Foreground="#888888" Margin="0,12,0,0" />
+    </Grid>
   </Border>
 </Window>

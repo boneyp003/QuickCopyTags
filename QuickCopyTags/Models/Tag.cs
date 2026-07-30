@@ -12,4 +12,8 @@ public partial class Tag : ObservableObject
 
     [ObservableProperty]
     private string _content = string.Empty;
+
+    /// <summary>Null means the tag is Uncategorized.</summary>
+    [ObservableProperty]
+    private string? _categoryId;
 }

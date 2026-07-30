@@ -1,5 +1,6 @@
 using Avalonia.Controls;
 using Avalonia.Input;
+using Avalonia.Interactivity;
 using Avalonia.Media;
 using Avalonia.Threading;
 using QuickCopyTags.Models;
@@ -13,6 +14,7 @@ public partial class SettingsWindow : Window
     private static readonly IBrush DragOverBrush = new SolidColorBrush(Color.FromArgb(60, 100, 149, 237));
 
     private readonly SettingsViewModel _viewModel;
+    private CategoriesWindow? _categoriesWindow;
 
     public SettingsWindow(SettingsViewModel viewModel)
     {
@@ -22,22 +24,60 @@ public partial class SettingsWindow : Window
         _viewModel.TagMoved += OnTagMoved;
     }
 
+    private void OnManageCategoriesClick(object? sender, RoutedEventArgs e)
+    {
+        if (_categoriesWindow is null || !_categoriesWindow.IsVisible)
+        {
+            _categoriesWindow = new CategoriesWindow(_viewModel.CreateCategoriesViewModel());
+            _categoriesWindow.Show(this);
+        }
+        else
+        {
+            _categoriesWindow.Activate();
+        }
+    }
+
+    private void OnCategorySelectionChanged(object? sender, SelectionChangedEventArgs e)
+    {
+        _viewModel.Save();
+    }
+
+    private void OnFontSizeSelectionChanged(object? sender, SelectionChangedEventArgs e)
+    {
+        _viewModel.Save();
+    }
+
     private void OnTagMoved(Tag tag)
     {
-        TagListBox.ScrollIntoView(tag);
-        TagListBox.UpdateLayout();
-
         // SelectedTag doesn't change reference across a reorder, so the binding never
         // re-fires and the newly recycled container never gets told it's selected.
         // Reassigning it explicitly forces the selection visual onto that container.
         TagListBox.SelectedItem = tag;
 
-        // NavigationMethod.Tab (rather than the default/pointer method) is what makes
-        // FluentTheme actually render the focus-visible outline on the item.
-        TagListBox.ContainerFromItem(tag)?.Focus(NavigationMethod.Tab);
+        ScrollToAndFocus(tag);
     }
 
-    private void OnFieldLostFocus(object? sender, Avalonia.Interactivity.RoutedEventArgs e)
+    private void ScrollToAndFocus(Tag tag)
+    {
+        try
+        {
+            // ScrollIntoView/UpdateLayout can throw ("Invalid Arrange rectangle") from an
+            // Avalonia VirtualizingStackPanel layout bug under some list states. This is a
+            // purely cosmetic scroll/focus affordance, so a failure here shouldn't crash
+            // the whole app or block the reorder itself, which already succeeded above.
+            TagListBox.ScrollIntoView(tag);
+            TagListBox.UpdateLayout();
+
+            // NavigationMethod.Tab (rather than the default/pointer method) is what makes
+            // FluentTheme actually render the focus-visible outline on the item.
+            TagListBox.ContainerFromItem(tag)?.Focus(NavigationMethod.Tab);
+        }
+        catch (InvalidOperationException)
+        {
+        }
+    }
+
+    private void OnFieldLostFocus(object? sender, RoutedEventArgs e)
     {
         _viewModel.Save();
     }
