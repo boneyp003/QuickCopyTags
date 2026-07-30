@@ -70,6 +70,10 @@ dotnet publish QuickCopyTags -c Release -r win-x64 --self-contained -p:PublishSi
 
 - [ ] Placeholder variables in tags (e.g. `{{company}}`, `{{role}}`) with an inline fill-in prompt before copying
 - [ ] Search/filter box in the main window
-- [ ] Categories/folders for grouping tags
+- [x] Categories/folders for grouping tags
 - [ ] Usage-based ordering (most-used tags float to the top)
 - [ ] Import/export tags for backup or moving between machines
+
+## License
+
+[MIT](LICENSE)
