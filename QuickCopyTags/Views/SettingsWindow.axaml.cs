@@ -2,6 +2,7 @@ using Avalonia.Controls;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Media;
+using Avalonia.Platform.Storage;
 using Avalonia.Threading;
 using QuickCopyTags.Models;
 using QuickCopyTags.ViewModels;
@@ -80,6 +81,26 @@ public partial class SettingsWindow : Window
     private void OnFieldLostFocus(object? sender, RoutedEventArgs e)
     {
         _viewModel.Save();
+    }
+
+    private async void OnChangeTagFileLocationClick(object? sender, RoutedEventArgs e)
+    {
+        var files = await StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
+        {
+            Title = "Choose a QuickCopyTags JSON file",
+            AllowMultiple = false,
+            FileTypeFilter = new[] { new FilePickerFileType("JSON files") { Patterns = new[] { "*.json" } } },
+        });
+
+        if (files.FirstOrDefault()?.TryGetLocalPath() is not { } path)
+        {
+            return;
+        }
+
+        var error = _viewModel.ChangeTagFileLocation(path);
+        TagFileLocationStatus.Text = error ?? $"Now using: {path}";
+        TagFileLocationStatus.Foreground = error is null ? Brushes.Gray : Brushes.Firebrick;
+        TagFileLocationStatus.IsVisible = true;
     }
 
     private async void OnItemPointerPressed(object? sender, PointerPressedEventArgs e)
