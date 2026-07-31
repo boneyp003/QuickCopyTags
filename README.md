@@ -72,7 +72,7 @@ dotnet publish QuickCopyTags -c Release -r win-x64 --self-contained -p:PublishSi
 - [ ] Search/filter box in the main window
 - [x] Categories/folders for grouping tags
 - [ ] Usage-based ordering (most-used tags float to the top)
-- [ ] Import/export tags for backup or moving between machines
+- [x] Change tag file location (Settings → "Change Tag File Location…"), so tags can live on a synced/shared file
 
 ## License
 

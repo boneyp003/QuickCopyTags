@@ -35,19 +35,29 @@ public partial class SettingsViewModel : ObservableObject
     public SettingsViewModel(TagStore tagStore)
     {
         _tagStore = tagStore;
-        var data = _tagStore.Load();
-        _tagFontSize = data.TagFontSize;
+        Categories.CollectionChanged += (_, _) => RebuildCategoryOptions();
+        PopulateFrom(_tagStore.Load());
+    }
+
+    /// <summary>Replaces the Tags/Categories/font size shown in the editor with the given data,
+    /// clearing the current selection. Used for the initial load and after switching tag files.</summary>
+    private void PopulateFrom(TagData data)
+    {
+        TagFontSize = data.TagFontSize;
+        SelectedTag = null;
+
+        Tags.Clear();
         foreach (var tag in data.Tags)
         {
             Tags.Add(tag);
         }
 
+        Categories.Clear();
         foreach (var category in data.Categories)
         {
             Categories.Add(category);
         }
 
-        Categories.CollectionChanged += (_, _) => RebuildCategoryOptions();
         RebuildCategoryOptions();
     }
 
@@ -136,6 +146,20 @@ public partial class SettingsViewModel : ObservableObject
     private bool HasSelection() => SelectedTag is not null;
 
     public void Save() => _tagStore.Save(new TagData { Tags = Tags.ToList(), Categories = Categories.ToList(), TagFontSize = TagFontSize });
+
+    /// <summary>Points the store at a different existing JSON file and reloads from it. Returns null on
+    /// success, or an error message if the file couldn't be used.</summary>
+    public string? ChangeTagFileLocation(string newPath)
+    {
+        var error = _tagStore.ChangeFilePath(newPath);
+        if (error is not null)
+        {
+            return error;
+        }
+
+        PopulateFrom(_tagStore.Load());
+        return null;
+    }
 
     public CategoriesViewModel CreateCategoriesViewModel() => new(_tagStore, Categories, Tags, TagFontSize);
 }
