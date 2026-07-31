@@ -26,6 +26,8 @@ QuickCopyTags/
   Assets/                   App icon (icon.ico/icon.png, generated from QTC_icon.png)
 package/
   build-deb.sh              Builds a self-contained .deb package for Ubuntu/Debian
+  build-windows.ps1          Builds a self-contained Windows installer (.exe)
+  windows.iss                Inno Setup script used by build-windows.ps1
 ```
 
 Tags are stored as JSON in the OS user config directory (`~/.config/QuickCopyTags/tags.json` on Linux, `%AppData%\QuickCopyTags\tags.json` on Windows).
@@ -60,11 +62,18 @@ sudo apt remove quickcopytags
 
 Your saved tags (`~/.config/QuickCopyTags/tags.json`) are untouched by install/uninstall.
 
-## Publishing for Windows
+## Building an installable package (Windows)
 
-```bash
-dotnet publish QuickCopyTags -c Release -r win-x64 --self-contained -p:PublishSingleFile=true
+Requires [Inno Setup 6](https://jrsoftware.org/isinfo.php) (`ISCC.exe` on `PATH` or in a well-known install location).
+
+```powershell
+./package/build-windows.ps1              # builds version 1.0.0
+./package/build-windows.ps1 -Version 1.2.0
 ```
+
+This publishes a self-contained `win-x64` build and packages it as an installer, output to `dist/quickcopytags_<version>_win-x64_setup.exe`. The installer adds a Start Menu entry, optional desktop shortcut, and a standard uninstaller.
+
+Your saved tags (`%AppData%\QuickCopyTags\tags.json`) are untouched by install/uninstall.
 
 ## TODO / ideas
 
