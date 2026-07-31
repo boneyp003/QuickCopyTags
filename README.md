@@ -81,7 +81,7 @@ Your saved tags (`%AppData%\QuickCopyTags\tags.json`) are untouched by install/u
 - [ ] Search/filter box in the main window
 - [x] Categories/folders for grouping tags
 - [ ] Usage-based ordering (most-used tags float to the top)
-- [x] Change tag file location (Settings → "Change Tag File Location…"), so tags can live on a synced/shared file
+- [x] Change tag file location (Settings → "Tag-set file"), so tags can live on a synced/shared file
 
 ## License
 
